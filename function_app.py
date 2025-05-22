@@ -7,19 +7,22 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 def resume_send_and_gather(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
+    try:
+        req_body = req.get_json()
+    except ValueError:
+        return func.HttpResponse("Invalid JSON body.", status_code=400)
 
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+    resume_url = req_body.get('resumeUrl')
+    job_description = req_body.get('jobDescription')
+
+    if resume_url and job_description:
+        # Process the data as needed
+        return func.HttpResponse(
+            f"Received resume URL: {resume_url}\nReceived job description: {job_description}",
+            status_code=200
+        )
     else:
         return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
+            "Please provide both resumeUrl and jobDescription in the request body.",
+            status_code=400
         )
