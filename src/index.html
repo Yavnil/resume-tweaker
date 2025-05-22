@@ -8,7 +8,7 @@
 <body>
     <div class="container">
         <h1>Resume Tweaker</h1>
-        <form>
+        <form id="resumeForm" onsubmit="submitForm(event)">
             <label for="resumeUrl">Resume URL:</label>
             <input type="text" id="resumeUrl" name="resumeUrl" placeholder="Enter your resume URL" required>
 
@@ -18,5 +18,21 @@
             <button type="submit">Submit</button>
         </form>
     </div>
+    <script>
+        function submitForm(event) {
+            event.preventDefault();
+            const resumeUrl = document.getElementById('resumeUrl').value;
+            const jobDescription = document.getElementById('jobDescription').value;
+
+            fetch('/api/resume_send_and_gather', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ resumeUrl, jobDescription })
+            })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Error: ' + error));
+        }
+    </script>
 </body>
 </html>
